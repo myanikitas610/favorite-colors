@@ -1,26 +1,42 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { useGetColorsQuery } from './features/colors/colorsApi';
 import { RootState } from './app/store';
 import { addColor, removeColor } from './features/colors/colorsSlice';
+import {
+  Container,
+  Title,
+  Subtitle,
+  ColorForm,
+  Input,
+  Button,
+  ColorList,
+  ColorItem,
+  ColorName,
+} from './components/StyledComponents';
+
+// Form input type
+interface ColorInput {
+  name: string;
+}
 
 function App() {
   const dispatch = useDispatch();
   const { data: apiColors = [], error, isLoading } = useGetColorsQuery();
   const localColors = useSelector((state: RootState) => state.colors.colors);
 
-  const [name, setName] = useState('');
+  const { register, handleSubmit, reset } = useForm<ColorInput>();
 
-  const handleAddColor = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name) return alert('Please enter a color name.');
+  // Form submit handler
+  const onSubmit: SubmitHandler<ColorInput> = (data) => {
     const newColor = {
       id: Date.now(),
-      name,
-      hex: name, 
+      name: data.name,
+      hex: data.name, // Use name as font color
     };
     dispatch(addColor(newColor));
-    setName('');
+    reset();
   };
 
   const handleRemoveColor = (id: number) => {
@@ -31,42 +47,42 @@ function App() {
   if (error) return <p>Failed to load colors</p>;
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>🎨 My Colors App</h1>
+    <Container>
+      <Title>My Colors</Title>
 
-      {/* Form to add local colors */}
-      <form onSubmit={handleAddColor} style={{ marginBottom: '20px' }}>
-        <input
+      {/* Form */}
+      <ColorForm onSubmit={handleSubmit(onSubmit)}>
+        <Input
+          {...register('name', { required: true })}
           type="text"
-          placeholder="Color name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={{ marginRight: '10px' }}
+          placeholder="Enter color name"
         />
-        <button type="submit">Add Color</button>
-      </form>
+        <Button type="submit">Add Color</Button>
+      </ColorForm>
 
-      {/* Display API colors (read-only) */}
-      <h2>API Colors</h2>
-      <ul>
-        {apiColors?.map((color) => (
-          <li key={color.id} style={{ color: color.name }}>
-            {color.name}
-          </li>
+      {/* API Colors Section */}
+      <Subtitle>API Colors</Subtitle>
+      <ColorList>
+        {apiColors.map((color) => (
+          <ColorItem key={color.id}>
+            <ColorName color={color.hex} isApi>
+              {color.name}
+            </ColorName>
+          </ColorItem>
         ))}
-      </ul>
+      </ColorList>
 
-      {/* Display local colors (removable) */}
-      <h2>My Colors</h2>
-      <ul>
-        {localColors?.map((color) => (
-          <li key={color.id} style={{ color: color.name }}>
-            {color.name}{' '}
-            <button onClick={() => handleRemoveColor(color.id)}>Remove</button>
-          </li>
+      {/* Local Colors Section */}
+      <Subtitle>Local Colors</Subtitle>
+      <ColorList>
+        {localColors.map((color) => (
+          <ColorItem key={color.id}>
+            <ColorName color={color.hex}>{color.name}</ColorName>
+            <Button onClick={() => handleRemoveColor(color.id)}>Remove</Button>
+          </ColorItem>
         ))}
-      </ul>
-    </div>
+      </ColorList>
+    </Container>
   );
 }
 

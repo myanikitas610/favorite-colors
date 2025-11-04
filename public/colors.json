@@ -1,6 +1,5 @@
 [
-  { "id": 1, "name": "red" },
-  { "id": 2, "name": "green" },
-  { "id": 3, "name": "blue" },
-  { "id": 4, "name": "yellow" }
+  { "id": 1, "name": "Red", "hex": "#ff0000" },
+  { "id": 2, "name": "Blue", "hex": "#0000ff" },
+  { "id": 3, "name": "Green", "hex": "#00ff00" }
 ]
