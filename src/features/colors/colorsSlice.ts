@@ -1,5 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Color } from '../../types';
+
+export interface Color{
+    id: number;
+    name: string;
+    hex: string;
+}
 
 interface ColorsState{
     colors: Color[];
