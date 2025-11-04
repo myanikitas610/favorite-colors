@@ -1,24 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react'; 
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from './app/store';
+import { addColor, removeColor } from './features/colors/colorsSlice';
+import { Color } from './types';
 
 function App() {
+  const dispatch = useDispatch();
+  const colors = useSelector((state: RootState) => state.colors.colors);
+  
+  useEffect(() => {
+    dispatch(addColor({id: 1, name: 'Red', hex: '#ff0000'}));
+  }, [dispatch]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style= {{padding: '2rem', fontFamily: 'Arial, sans-serif'}}>
+      <h1>My Favorite Colors</h1>
+      <ul>
+        {colors.map((color: Color) => (
+          <li key= {color.id}>
+            {color.name} - <span style={{color: color.hex}}>{color.hex}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
